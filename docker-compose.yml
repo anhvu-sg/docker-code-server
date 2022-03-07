@@ -27,7 +27,6 @@ services:
 
   vscode-pg14:
     image: postgres:14
-    restart: always
     ports:
       - 41345:5432
     environment:
@@ -38,15 +37,61 @@ services:
       - ./postgresql/pg14/data:/var/lib/postgresql/data
     networks:
       vpcbr:
+        ipv4_address: 172.172.0.14
+    restart: unless-stopped
+
+  vscode-pg13:
+    image: postgres:13
+    ports:
+      - 31345:5432
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: vscode
+    volumes:
+      - ./postgresql/pg14/data:/var/lib/postgresql/data
+    networks:
+      vpcbr:
+        ipv4_address: 172.172.0.13
+    restart: unless-stopped
+
+  vscode-pg12:
+    image: postgres:12
+    ports:
+      - 21345:5432
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: vscode
+    volumes:
+      - ./postgresql/pg14/data:/var/lib/postgresql/data
+    networks:
+      vpcbr:
+        ipv4_address: 172.172.0.12
+    restart: unless-stopped
+
+  vscode-pg11:
+    image: postgres:11
+    ports:
+      - 11345:5432
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: vscode
+    volumes:
+      - ./postgresql/pg14/data:/var/lib/postgresql/data
+    networks:
+      vpcbr:
         ipv4_address: 172.172.0.11
     restart: unless-stopped
+
 networks:
   vpcbr:
     driver: bridge
     ipam:
-     config:
-       - subnet: 172.172.0.0/16
-         gateway: 172.172.0.1
+      config:
+        - subnet: 172.172.0.0/16
+          gateway: 172.172.0.1
 volumes:
   config:
   postgresql:
