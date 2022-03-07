@@ -17,9 +17,9 @@ services:
       - ./config:/config
     ports:
       - 8443:8443
-      - 8888:8000
-      - 19969:8069
-      - 19972:8072
+      - 8000:8000
+      - 8069:8069
+      - 8072:8072
     networks:
       vpcbr:
         ipv4_address: 172.172.0.10
@@ -28,7 +28,7 @@ services:
   vscode-pg14:
     image: postgres:14
     ports:
-      - 41345:5432
+      - 54314:5432
     environment:
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres
@@ -43,7 +43,7 @@ services:
   vscode-pg13:
     image: postgres:13
     ports:
-      - 31345:5432
+      - 54313:5432
     environment:
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres
@@ -58,7 +58,7 @@ services:
   vscode-pg12:
     image: postgres:12
     ports:
-      - 21345:5432
+      - 54312:5432
     environment:
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres
@@ -73,7 +73,7 @@ services:
   vscode-pg11:
     image: postgres:11
     ports:
-      - 11345:5432
+      - 54311:5432
     environment:
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres
