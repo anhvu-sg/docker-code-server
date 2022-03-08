@@ -1,25 +1,23 @@
 version: "3"
 services:
   code-server:
-    image: .
+    image: vuna2004/code-server:gatsby-env
     container_name: code-server
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Asia/Saigon
-      - PASSWORD=P@ssword #optional
+      - PASSWORD=password #optional
       - HASHED_PASSWORD= #optional
       - SUDO_PASSWORD=password #optional
       - SUDO_PASSWORD_HASH= #optional
-      - PROXY_DOMAIN=vscode.gotdns.ch #optional
+      - PROXY_DOMAIN= #optional
       - DEFAULT_WORKSPACE=/config/workspace #optional
     volumes:
       - ./config:/config
     ports:
       - 8443:8443
-      - 8888:8000
-      - 19969:8069
-      - 19972:8072
+      - 8000:8000
     networks:
       vpcbr:
         ipv4_address: 172.172.0.10
