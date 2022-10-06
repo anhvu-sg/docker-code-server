@@ -1,7 +1,7 @@
 version: "3"
 services:
   code-server:
-    image: vuna2004/code-server:4.7.0-odoo15-env
+    image: vuna2004/code-server:odoo15-env
     container_name: code-server
     environment:
       - PUID=1000
