@@ -1,11 +1,7 @@
-# vscode for odoo dev
-FROM lscr.io/linuxserver/code-server
+# vscode for odoo15 dev
+FROM lscr.io/linuxserver/code-server:4.7.0
 
 RUN \
-  echo "**** install node repo ****" && \
-    curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
-    echo 'deb https://deb.nodesource.com/node_14.x focal main' \
-    > /etc/apt/sources.list.d/nodesource.list && \
   echo "**** install build dependencies ****" && \
     apt-get update && \
     apt-get install -y \
@@ -23,14 +19,12 @@ RUN apt-get install -y libpq-dev python-dev libxml2-dev libxslt1-dev libldap2-de
 
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.1/zsh-in-docker.sh)"
 
-RUN npm install -g npm
-RUN npm install -g less@3.10.3 -f
+# RUN npm install -g npm
+# RUN npm install -g less@3.10.3 -f
 
-RUN apt-get install \n
-RUN wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.focal_amd64.deb
-RUN dpkg -i wkhtmltox_0.12.5-1.focal_amd64.deb
-RUN apt -f install
-RUN rm -rf wkhtmltox_0.12.5-1.focal_amd64.deb
+RUN curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.focal_amd64.deb \
+  && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
+  && rm -rf /var/lib/apt/lists/* wkhtmltox.deb
 
 RUN \
   echo "**** clean up ****" && \
