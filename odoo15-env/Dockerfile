@@ -19,8 +19,8 @@ RUN apt-get install -y libpq-dev python-dev libxml2-dev libxslt1-dev libldap2-de
 
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.1/zsh-in-docker.sh)"
 
-RUN npm install -g npm
-RUN npm install -g less@3.10.3 -f
+# RUN npm install -g npm
+# RUN npm install -g less@3.10.3 -f
 
 RUN apt-get install \n
 RUN wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.focal_amd64.deb
