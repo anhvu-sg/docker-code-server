@@ -22,7 +22,7 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
 # RUN npm install -g npm
 # RUN npm install -g less@3.10.3 -f
 
-RUN wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.focal_amd64.deb
+RUN wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.focal_amd64.deb .
 RUN dpkg -i wkhtmltox_0.12.5-1.focal_amd64.deb
 RUN apt -f install
 RUN rm -rf wkhtmltox_0.12.5-1.focal_amd64.deb
