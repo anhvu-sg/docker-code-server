@@ -1,0 +1,88 @@
+name: CI to Docker Hub
+
+on:
+  push:
+    tags:
+      - "odoo16-env-*"
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@master
+        with:
+          platforms: all
+      -
+        name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      -
+        name: Docker meta
+        id: meta
+        uses: crazy-max/ghaction-docker-meta@v2
+        with:
+          images: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}
+          tags: |
+            type=raw,value=latest,enable=${{ endsWith(GitHub.ref, 'main') }}
+            type=ref,event=tag
+            type=raw,value=odoo16-env
+
+          flavor: |
+            latest=false
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PWD }}
+      # -
+      #   name: Pull latest image and change to previous image
+      #   run: |
+      #     docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}:latest
+      #     docker tag ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}:latest ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}:previous
+      #     docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}:previous
+      -
+        name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./odoo16-env
+          file: ./odoo16-env/Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          #platforms: linux/arm64
+          push: true
+          # tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}:latest
+          tags: ${{ steps.meta.outputs.tags }}
+      # -
+      #   name: Keep 7 version
+      #   run: |
+      #     VERSION=$(echo ${{ steps.meta.outputs.version }} | grep -o '[^-]*$')
+      #     MAJOR=$(echo $VERSION | cut -d. -f1)
+      #     MINOR=$(echo $VERSION | cut -d. -f2)
+      #     PATCH=$(echo $VERSION | cut -d. -f3)
+
+      #     REMOVE_TAG = v$MAJOR.$MINOR.$PATCH
+      #     echo "Tag remove $REMOVE_TAG"
+      #     TOKEN=`curl -s -H "Content-Type: application/json" -X POST -H "Content-Type: application/json" -d '{"username":"${{ secrets.DOCKER_HUB_USERNAME }}", "password":"${{ secrets.DOCKER_HUB_PWD }}"}' "https://hub.docker.com/v2/users/login/" | jq -r .token`
+      #     curl "https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}/tags/$REMOVE_TAG/" -X DELETE -H "Authorization: JWT $TOKEN"
+      -
+        name: Image digest
+        run: |
+          echo ${{ steps.docker_build.outputs.digest }}
+          free -m | awk 'NR==2{printf "Memory Usage: %s/%sMB (%.2f%%)\n", $3,$2,$3*100/$2 }'
+          df -h | awk '$NF=="/"{printf "Disk Usage: %d/%dGB (%s)\n", $3,$2,$5}'
+          top -bn1 | grep load | awk '{printf "CPU Load: %.2f\n", $(NF-2)}'

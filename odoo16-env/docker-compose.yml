@@ -1,0 +1,52 @@
+version: "3"
+services:
+  code-server:
+    image: vuna2004/code-server:odoo16-env
+    container_name: code-server
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Saigon
+      - PASSWORD=password #optional
+      - HASHED_PASSWORD= #optional
+      - SUDO_PASSWORD=password #optional
+      - SUDO_PASSWORD_HASH= #optional
+      - PROXY_DOMAIN= #optional
+      - DEFAULT_WORKSPACE=/config/workspace #optional
+    volumes:
+      - ./config:/config
+    ports:
+      - 8443:8443
+      - 8000:8000
+      - 8069:8069
+      - 8072:8072
+    networks:
+      vpcbr:
+        ipv4_address: 172.172.0.10
+    restart: unless-stopped
+
+  vscode-pg15:
+    image: postgres:15
+    ports:
+      - 54315:5432
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: vscode
+    volumes:
+      - ./postgresql/pg15/data:/var/lib/postgresql/data
+    networks:
+      vpcbr:
+        ipv4_address: 172.172.0.15
+    restart: unless-stopped
+
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.172.0.0/16
+          gateway: 172.172.0.1
+volumes:
+  config:
+  postgresql:
